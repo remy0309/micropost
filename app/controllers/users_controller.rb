@@ -11,14 +11,21 @@ class UsersController < ApplicationController
     @user = User.new(user_params)
     if @user.save
       flash[:success] = "Welcome to the Sample App!"
+      session[:user_id] = @user.id
       redirect_to @user
     else
       render 'new'
     end
   end
-
+  
   def edit
     @user = User.find(params[:id])
+    redirect_to root_url if @user != current_user
+  end
+  
+  def update
+    @user = User.find(params[:id])
+    redirect_to root_url if @user != current_user
     if @user.update(user_params)
       flash[:success] = "update succeed"
       redirect_to @user
@@ -28,7 +35,7 @@ class UsersController < ApplicationController
   end
   
   private
-
+  
   def user_params
     params.require(:user).permit(:name, :email, :password, :password_confirmation, :area, :profile)
   end
